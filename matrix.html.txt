@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matrix Verde</title>
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh}
+.info{position:fixed;top:10px;left:10px;color:#66ff66;font-family:monospace;font-size:13px}
+.credit{position:fixed;bottom:10px;right:10px;color:#66ff66;font-family:monospace;font-size:12px}
+</style>
+</head>
+<body>
+<div class="info">SIMULAZIONE — NON REALE</div>
+<canvas id="c"></canvas>
+<div class="credit" id="finalMsg"></div>
+<script>
+(() => {
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+function resize(){const dpr=window.devicePixelRatio||1;c.width=window.innerWidth*dpr;c.height=window.innerHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+window.addEventListener('resize',resize);resize();
+const fs=Math.max(10,Math.floor(window.innerWidth/80)),cols=Math.floor(window.innerWidth/fs),chars=['0','1','0','1','0','1','2','9'];
+let state=new Array(cols).fill(0).map(()=>({y:Math.random()*-100,speed:2+Math.random()*5})),stop=false;
+ctx.font=fs+'px monospace';ctx.textBaseline='top';
+function frame(){if(stop)return;ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fillRect(0,0,c.width,c.height);
+state.forEach(col=>{let x=state.indexOf(col)*fs,char=chars[Math.floor(Math.random()*chars.length)];ctx.fillStyle='#66ff66';ctx.fillText(char,x,col.y);
+for(let s=1;s<8;s++){let y=col.y-s*fs;if(y<-fs)return;ctx.fillStyle=`rgba(102,255,102,${Math.max(0,0.9-s*0.12)})`;ctx.fillText(chars[Math.floor(Math.random()*chars.length)],x,y);}
+col.y+=col.speed;if(col.y>window.innerHeight+Math.random()*800){col.y=-Math.random()*100;col.speed=2+Math.random()*5;}});requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+setTimeout(()=>{stop=true;document.getElementById('finalMsg').textContent='Simulazione terminata — nessun dato modificato';},10000);
+})();
+</script>
+</body>
+</html>
